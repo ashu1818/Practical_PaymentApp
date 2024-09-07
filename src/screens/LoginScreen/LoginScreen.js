@@ -19,31 +19,35 @@ const LoginScreen = () => {
   const loginFunc = async () => {
     if (email.length > 0 && password.length > 0) {
       if (validateEmail(email)) {
-        const credentials = await Keychain.getGenericPassword();
+        try {
+          const credentials = await Keychain.getGenericPassword();
 
-        let bytesUserName = CryptoJS.AES.decrypt(
-          credentials?.username,
-          USER_SECRET_KEY,
-        );
-        let strUserName = bytesUserName.toString(CryptoJS.enc.Utf8);
-
-        let bytesUserPassword = CryptoJS.AES.decrypt(
-          credentials?.password,
-          USER_SECRET_KEY,
-        );
-        let strUserPassword = bytesUserPassword.toString(CryptoJS.enc.Utf8);
-        if (email == strUserName && password == strUserPassword) {
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 1,
-              routes: [
-                {
-                  name: 'HomeScreen',
-                },
-              ],
-            }),
+          let bytesUserName = CryptoJS.AES.decrypt(
+            credentials?.username,
+            USER_SECRET_KEY,
           );
-        } else {
+          let strUserName = bytesUserName.toString(CryptoJS.enc.Utf8);
+
+          let bytesUserPassword = CryptoJS.AES.decrypt(
+            credentials?.password,
+            USER_SECRET_KEY,
+          );
+          let strUserPassword = bytesUserPassword.toString(CryptoJS.enc.Utf8);
+          if (email == strUserName && password == strUserPassword) {
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 1,
+                routes: [
+                  {
+                    name: 'HomeScreen',
+                  },
+                ],
+              }),
+            );
+          } else {
+            Alert.alert('Invalid Credentials');
+          }
+        } catch (error) {
           Alert.alert('Invalid Credentials');
         }
       } else {
